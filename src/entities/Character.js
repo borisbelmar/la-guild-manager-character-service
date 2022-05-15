@@ -20,7 +20,6 @@ const CharacterSchema = new mongoose.Schema({
   },
   guild: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
     ref: 'Guild'
   },
   createdBy: {
