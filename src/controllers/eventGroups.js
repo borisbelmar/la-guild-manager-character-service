@@ -31,6 +31,7 @@ const getEventGroupsControllers = () => {
     const data = await EventGroup.findOne({
       _id: new ObjectId(id)
     }).populate('characters').exec()
+
     if (!data) {
       throw new ServerError(404)
     }
@@ -191,8 +192,7 @@ const getEventGroupsControllers = () => {
     }
 
     const data = await EventGroup.updateOne({
-      _id: new ObjectId(id),
-      createdBy: userSession.sub
+      _id: new ObjectId(id)
     }, {
       ...payload,
       updateBy: userSession.sub
@@ -202,10 +202,8 @@ const getEventGroupsControllers = () => {
 
   const deleteOne = async ctx => {
     const { id } = ctx.params
-    const { userSession } = ctx.state
     const data = await EventGroup.deleteOne({
-      _id: new ObjectId(id),
-      createdBy: userSession.sub
+      _id: new ObjectId(id)
     })
     ctx.body = data
   }

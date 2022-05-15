@@ -108,7 +108,7 @@ const getCharactersControllers = () => {
       throw new ServerError(404)
     }
     const character = await Character.deleteOne({
-      id: new ObjectId(id)
+      _id: new ObjectId(id)
     })
     ctx.body = character
   }
