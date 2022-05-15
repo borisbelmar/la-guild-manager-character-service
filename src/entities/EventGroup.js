@@ -9,17 +9,13 @@ const EventGroupSchema = new mongoose.Schema({
   description: {
     type: String
   },
-  minIlvl: {
-    type: Number,
+  type: {
+    type: String,
     required: true
   },
-  dpsCount: {
-    type: Number,
-    default: 0
-  },
-  supportCount: {
-    type: Number,
-    default: 0
+  startAt: {
+    type: Date,
+    required: true
   },
   open: {
     type: Boolean,

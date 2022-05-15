@@ -8,6 +8,7 @@ import {
   updateEventGroupSchema
 } from '../validators/eventGroupSchema.js'
 import CLASSES from '../constants/classes.js'
+import EVENT_TYPES from '../constants/eventTypes.js'
 
 const { ObjectId } = mongoose.Types
 
@@ -69,6 +70,12 @@ const getEventGroupsControllers = () => {
       throw new ServerError(400, e.message)
     }
 
+    const eventGroup = await EventGroup.findOne({
+      _id: new ObjectId(id)
+    }).populate('characters').exec()
+
+    const eventType = EVENT_TYPES[eventGroup.type]
+
     const character = await Character.findOne({
       _id: new ObjectId(id)
     })
@@ -81,15 +88,11 @@ const getEventGroupsControllers = () => {
       throw new ServerError(403, 'You dont have permissions to add this character')
     }
 
-    const eventGroup = await EventGroup.findOne({
-      _id: new ObjectId(id)
-    }).populate('characters').exec()
-
     if (!eventGroup) {
       throw new ServerError(404, 'Event group not found')
     }
 
-    if (eventGroup.minIlvl > character.ilvl) {
+    if (eventType.minIlvl > character.ilvl) {
       throw new ServerError(400, 'Character ilvl is lower than event group ilvl')
     }
 
@@ -107,14 +110,14 @@ const getEventGroupsControllers = () => {
 
     if (
       CLASSES[character.class] === 'dps'
-      && charactersByRole.dps.length >= eventGroup.dpsCount
+      && charactersByRole.dps.length >= eventType.dps
     ) {
       throw new ServerError(400, 'Dps limit reached')
     }
 
     if (
       CLASSES[character.class] === 'support'
-      && charactersByRole.support.length >= eventGroup.supportCount
+      && charactersByRole.support.length >= eventType.support
     ) {
       throw new ServerError(400, 'Support limit reached')
     }
@@ -125,6 +128,47 @@ const getEventGroupsControllers = () => {
       },
       {
         $push: {
+          characters: payload.character
+        }
+      }
+    )
+    ctx.body = data
+  }
+
+  const removeCharacter = async ctx => {
+    const { userSession } = ctx.state
+    const { id } = ctx.params
+    if (!ObjectId.isValid(id)) {
+      throw new ServerError(404)
+    }
+    const payload = ctx.request.body
+
+    const eventGroup = await EventGroup.findOne({
+      _id: new ObjectId(id)
+    }).populate('characters').exec()
+
+    if (!eventGroup) {
+      throw new ServerError(404, 'Event group not found')
+    }
+
+    const character = await Character.findOne({
+      _id: new ObjectId(id)
+    })
+
+    if (!character) {
+      throw new ServerError(404, 'Character not found')
+    }
+
+    if (character.createdBy !== userSession.sub) {
+      throw new ServerError(403, 'You dont have permissions to remove this character')
+    }
+
+    const data = await EventGroup.updateOne(
+      {
+        _id: new ObjectId(id)
+      },
+      {
+        $pull: {
           characters: payload.character
         }
       }
@@ -172,7 +216,8 @@ const getEventGroupsControllers = () => {
     create,
     updateOne,
     deleteOne,
-    registerCharacter
+    registerCharacter,
+    removeCharacter
   }
 }
 
