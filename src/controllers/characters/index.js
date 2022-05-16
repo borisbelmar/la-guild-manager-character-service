@@ -1,0 +1,5 @@
+export { default as getAll } from './getAll.js'
+export { default as getById } from './getById.js'
+export { default as create } from './create.js'
+export { default as updateOne } from './updateOne.js'
+export { default as deleteOne } from './deleteOne.js'

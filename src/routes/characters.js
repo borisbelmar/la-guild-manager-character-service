@@ -1,13 +1,18 @@
 import Router from '@koa/router'
-import getCharacterControllers from '../controllers/characters.js'
+import {
+  getAll,
+  getById,
+  create,
+  updateOne,
+  deleteOne
+} from '../controllers/characters/index.js'
 
 const characterRouter = new Router()
-const controllers = getCharacterControllers()
 
-characterRouter.get('/', controllers.getAll)
-characterRouter.get('/:id', controllers.getById)
-characterRouter.post('/', controllers.create)
-characterRouter.put('/:id', controllers.updateOne)
-characterRouter.delete('/:id', controllers.deleteOne)
+characterRouter.get('/', getAll)
+characterRouter.get('/:id', getById)
+characterRouter.post('/', create)
+characterRouter.put('/:id', updateOne)
+characterRouter.delete('/:id', deleteOne)
 
 export default characterRouter

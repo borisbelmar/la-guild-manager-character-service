@@ -1,13 +1,18 @@
 import Router from '@koa/router'
-import getGuildControllers from '../controllers/guilds.js'
+import {
+  getAll,
+  getById,
+  create,
+  updateOne,
+  deleteOne
+} from '../controllers/guilds/index.js'
 
 const guildRouter = new Router()
-const controllers = getGuildControllers()
 
-guildRouter.get('/', controllers.getAll)
-guildRouter.get('/:id', controllers.getById)
-guildRouter.post('/', controllers.create)
-guildRouter.put('/:id', controllers.updateOne)
-guildRouter.delete('/:id', controllers.deleteOne)
+guildRouter.get('/', getAll)
+guildRouter.get('/:id', getById)
+guildRouter.post('/', create)
+guildRouter.put('/:id', updateOne)
+guildRouter.delete('/:id', deleteOne)
 
 export default guildRouter
